@@ -1,0 +1,790 @@
+/* VoltCap — Automotive Light Dashboard Design System */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg: #ECEEF1;
+    --card: #FFFFFF;
+    --card-tint: #F4FBE3;
+    --lime: #C5E84A;
+    --lime-strong: #A8D12F;
+    --lime-soft: #E6F5B5;
+    --ink: #1A1D21;
+    --muted: #8A9099;
+    --line: #E3E6EA;
+    --bar-grey: #C9CDD3;
+    --bar-dark: #4A4F57;
+    --status-low: #C5E84A;
+    --status-medium: #F2C94C;
+    --status-high: #F2994A;
+    --status-overload: #EB5757;
+    --splash-gradient: linear-gradient(180deg, #C5E84A 0%, #E9F4C8 55%, #F2F3F5 100%);
+    --card-shadow: 0 4px 18px rgba(20, 25, 30, 0.06);
+    --card-shadow-hover: 0 8px 26px rgba(20, 25, 30, 0.11);
+}
+
+/* Base Body & Streamlit Container */
+html, body, [data-testid="stAppViewContainer"], .stApp {
+    background-color: var(--bg) !important;
+    color: var(--ink) !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+}
+
+.main .block-container {
+    max-width: 1240px !important;
+    padding-top: 1.5rem !important;
+    padding-bottom: 2.5rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+
+/* Hide Streamlit default chrome */
+#MainMenu { visibility: hidden !important; }
+footer { visibility: hidden !important; }
+header[data-testid="stHeader"] {
+    background: transparent !important;
+    z-index: 9999 !important;
+}
+
+[data-testid="collapsedControl"] {
+    display: flex !important;
+    visibility: visible !important;
+    position: fixed !important;
+    top: 14px !important;
+    left: 14px !important;
+    z-index: 100000 !important;
+}
+
+[data-testid="collapsedControl"] button {
+    background: #FFFFFF !important;
+    border: 2px solid #C5E84A !important;
+    border-radius: 999px !important;
+    color: #0F172A !important;
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+    box-shadow: 0 4px 16px rgba(20, 25, 30, 0.15) !important;
+    padding: 7px 16px !important;
+    transition: all 0.2s ease !important;
+}
+
+[data-testid="collapsedControl"] button:hover {
+    background: #C5E84A !important;
+    border-color: #A8D12F !important;
+    transform: scale(1.05) !important;
+}
+
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--ink) !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em !important;
+}
+
+/* Hero / Splash Banner */
+.voltcap-hero-banner {
+    background: var(--splash-gradient);
+    border-radius: 22px;
+    padding: 26px 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(197, 232, 74, 0.4);
+}
+
+.voltcap-hero-left {
+    z-index: 2;
+    max-width: 65%;
+}
+
+.voltcap-hero-title-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+}
+
+.voltcap-hero-title {
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--ink) !important;
+    margin: 0;
+    letter-spacing: -0.03em;
+}
+
+.voltcap-hero-tagline {
+    font-size: 1.02rem;
+    color: #383D43 !important;
+    margin: 0;
+    font-weight: 500;
+}
+
+.voltcap-hero-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 2;
+}
+
+.voltcap-hero-illustration {
+    width: 180px;
+    height: 80px;
+    opacity: 0.9;
+}
+
+/* Status Pill */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    background: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Sliding Sidebar Toggle Pill */
+.hero-sidebar-toggle-btn {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    border-radius: 999px !important;
+    padding: 6px 16px !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    color: #0F172A !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin-left: 6px !important;
+}
+
+.hero-sidebar-toggle-btn:hover {
+    background: #C5E84A !important;
+    border-color: #A8D12F !important;
+    transform: translateY(-1px) scale(1.02) !important;
+    box-shadow: 0 4px 12px rgba(168, 209, 47, 0.4) !important;
+}
+
+
+/* Cards (Standard White & Hero Tinted) */
+.volt-card {
+    background: var(--card);
+    border-radius: 22px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    border: 1px solid var(--line);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.volt-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.volt-card-tint {
+    background: var(--card-tint) !important;
+    border: 1px solid #E1F2B5 !important;
+}
+
+.card-corner-arc {
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    width: 65px;
+    height: 65px;
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+/* Card Typography */
+.card-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1E293B !important;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.card-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #0F172A !important;
+    line-height: 1.1;
+    margin-bottom: 6px;
+    letter-spacing: -0.03em;
+}
+
+.card-subtext {
+    font-size: 0.90rem;
+    color: #334155 !important;
+    font-weight: 500;
+}
+
+/* Segmented Meter (Consumption style) */
+.segmented-meter-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 12px 0;
+}
+
+.segment-bar {
+    height: 18px;
+    width: 6px;
+    border-radius: 3px;
+    background: var(--line);
+}
+
+.segment-bar.active {
+    background: var(--lime);
+}
+
+.segment-bar.active-warning {
+    background: var(--status-medium);
+}
+
+.segment-bar.active-danger {
+    background: var(--status-overload);
+}
+
+/* Pill Tabs Navigation — High Contrast & Dark Text */
+div[data-testid="stTabs"] {
+    background: transparent !important;
+}
+
+div[data-testid="stTabs"] div[role="tablist"] {
+    display: flex !important;
+    gap: 10px !important;
+    background: transparent !important;
+    padding-bottom: 16px !important;
+    border-bottom: none !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+}
+
+div[data-testid="stTabs"] [data-testid="stTab"],
+div[data-testid="stTabs"] div[role="tab"],
+div[data-testid="stTabs"] button[role="tab"] {
+    background-color: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    border-radius: 999px !important;
+    padding: 9px 22px !important;
+    color: #1E293B !important;
+    font-size: 0.90rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05) !important;
+    transition: all 0.15s ease !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    outline: none !important;
+    border-bottom-width: 1.5px !important;
+}
+
+div[data-testid="stTabs"] [data-testid="stTab"]:hover,
+div[data-testid="stTabs"] div[role="tab"]:hover,
+div[data-testid="stTabs"] button[role="tab"]:hover {
+    border-color: #A8D12F !important;
+    background-color: #F8FAFC !important;
+    color: #0F172A !important;
+}
+
+div[data-testid="stTabs"] [data-testid="stTab"][aria-selected="true"],
+div[data-testid="stTabs"] div[role="tab"][aria-selected="true"],
+div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
+    background-color: #C5E84A !important;
+    border: 2px solid #84A816 !important;
+    color: #0F172A !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px rgba(168, 209, 47, 0.5) !important;
+}
+
+div[data-testid="stTabs"] [data-testid="stTab"] p,
+div[data-testid="stTabs"] div[role="tab"] p,
+div[data-testid="stTabs"] [data-testid="stTab"] span,
+div[data-testid="stTabs"] div[role="tab"] span {
+    color: inherit !important;
+    font-weight: inherit !important;
+    margin: 0 !important;
+}
+
+div[data-testid="stTabs"] [data-testid="stTab"]::after,
+div[data-testid="stTabs"] div[role="tab"]::after,
+div[data-testid="stTabs"] [data-baseweb="tab-highlight"],
+div[data-testid="stTabs"] [data-baseweb="tab-border"] {
+    display: none !important;
+    height: 0 !important;
+    opacity: 0 !important;
+}
+
+/* Horizontal Radio as Pill Filter Chips — High Contrast & Dark Text */
+div[data-testid="stRadio"] div[role="radiogroup"] {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+}
+
+div[data-testid="stRadio"] div[role="radiogroup"] > label {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    border-radius: 999px !important;
+    padding: 7px 20px !important;
+    margin: 0 !important;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04) !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+}
+
+div[data-testid="stRadio"] div[role="radiogroup"] > label:hover {
+    border-color: #A8D12F !important;
+}
+
+/* Hide native radio circle */
+div[data-testid="stRadio"] div[role="radiogroup"] > label div:first-child {
+    display: none !important;
+}
+
+div[data-testid="stRadio"] div[role="radiogroup"] > label p {
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    color: #1E293B !important;
+    margin: 0 !important;
+}
+
+div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
+    background: #C5E84A !important;
+    border: 2px solid #84A816 !important;
+    box-shadow: 0 2px 10px rgba(168, 209, 47, 0.45) !important;
+}
+
+div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) p {
+    color: #0F172A !important;
+    font-weight: 700 !important;
+}
+
+/* Native Streamlit Metric Restyling — Dark & High Contrast */
+[data-testid="stMetric"] {
+    background: var(--card) !important;
+    border: 1.5px solid #E2E8F0 !important;
+    border-radius: 22px !important;
+    padding: 18px 22px !important;
+    box-shadow: var(--card-shadow) !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+[data-testid="stMetric"]:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--card-shadow-hover) !important;
+}
+
+[data-testid="stMetricLabel"] {
+    color: #334155 !important;
+    font-size: 0.86rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+}
+
+[data-testid="stMetricValue"] {
+    color: #0F172A !important;
+    font-size: 2.1rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.03em !important;
+}
+
+[data-testid="stMetricDelta"] {
+    font-size: 0.84rem !important;
+    font-weight: 700 !important;
+}
+
+/* Sidebar Option Visibility */
+[data-testid="stSidebar"] label p,
+[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
+    color: #0F172A !important;
+    font-weight: 600 !important;
+}
+
+[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] > label p {
+    color: #1E293B !important;
+    font-weight: 600 !important;
+}
+
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background-color: #FFFFFF !important;
+    border-right: 1px solid var(--line) !important;
+    padding: 1.5rem 1rem !important;
+}
+
+[data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+    color: var(--ink) !important;
+    font-size: 1.15rem !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Slider styling with Lime Accent */
+div[data-baseweb="slider"] div[role="slider"] {
+    background-color: #FFFFFF !important;
+    border: 3px solid #C5E84A !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+}
+
+/* Buttons */
+.stButton button {
+    border-radius: 999px !important;
+    font-weight: 600 !important;
+    padding: 8px 24px !important;
+    border: 1px solid var(--line) !important;
+    background: var(--card) !important;
+    color: var(--ink) !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
+    transition: all 0.15s ease !important;
+}
+
+.stButton button:hover {
+    background: var(--lime) !important;
+    border-color: var(--lime) !important;
+    color: var(--ink) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(197, 232, 74, 0.4) !important;
+}
+
+/* Explainer Captions */
+.what-this-means {
+    background: #FFFFFF;
+    border-left: 3px solid var(--lime);
+    border-radius: 0 12px 12px 0;
+    padding: 10px 16px;
+    font-size: 0.84rem;
+    color: var(--muted);
+    margin-top: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    border-top: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+.what-this-means b {
+    color: var(--ink);
+}
+
+/* Proof of Cap banner */
+.cap-respected-banner {
+    background: #FFFFFF;
+    border-radius: 22px;
+    padding: 18px 24px;
+    border: 1px solid var(--line);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .voltcap-hero-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+    }
+    .voltcap-hero-left {
+        max-width: 100%;
+        margin-bottom: 12px;
+    }
+    .voltcap-hero-illustration {
+        display: none;
+    }
+    .main .block-container {
+        padding-left: 0.8rem !important;
+        padding-right: 0.8rem !important;
+    }
+}
+
+/* Executive Compliance & ESG Certificate Card */
+.compliance-cert-card {
+    background: #FFFFFF;
+    border: 2px solid #C5E84A;
+    border-radius: 18px;
+    padding: 24px 28px;
+    margin: 20px 0;
+    box-shadow: 0 6px 24px rgba(20, 25, 30, 0.06);
+    position: relative;
+}
+
+.compliance-cert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #E3E6EA;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.compliance-cert-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1A1D21;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.compliance-cert-badge {
+    background: #E6F5B5;
+    color: #2F5605;
+    border: 1px solid #A8D12F;
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.compliance-cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.compliance-cert-item {
+    background: #F8F9FA;
+    border-radius: 12px;
+    padding: 12px 16px;
+    border: 1px solid #E3E6EA;
+}
+
+.compliance-cert-item-label {
+    font-size: 0.78rem;
+    color: #8A9099;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.compliance-cert-item-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1A1D21;
+}
+
+/* Empirical ACN Data & Hardware Integration Badges */
+.empirical-acn-badge {
+    background: #EEF2FF;
+    color: #3730A3;
+    border: 1px solid #C7D2FE;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.tou-tariff-bar {
+    background: #FFFFFF;
+    border: 1px solid #E3E6EA;
+    border-radius: 14px;
+    padding: 14px 20px;
+    margin: 14px 0 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.tou-tariff-pill {
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ocpp-container {
+    background: #FFFFFF;
+    border: 1px solid #E3E6EA;
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-top: 20px;
+}
+
+/* WattWise Logo Emblem */
+.wattwise-logo-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(20, 25, 30, 0.12);
+    border: 2px solid #FFFFFF;
+    background: #FFFFFF;
+}
+
+.wattwise-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #E3E6EA;
+}
+
+.wattwise-sidebar-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    border: 2px solid #FFFFFF;
+    background: #FFFFFF;
+}
+
+.wattwise-sidebar-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1A1D21;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.wattwise-sidebar-subtitle {
+    font-size: 0.76rem;
+    color: #8A9099;
+    font-weight: 500;
+}
+
+/* Floating Bottom Navigation Dock — Interactive & Functional */
+.floating-bottom-dock {
+    position: fixed !important;
+    bottom: 22px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    border-radius: 999px !important;
+    padding: 8px 18px !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 10px 35px rgba(15, 23, 42, 0.16) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    z-index: 999999 !important;
+    pointer-events: auto !important;
+}
+
+.dock-btn {
+    background: #FFFFFF !important;
+    border: 1.5px solid #E2E8F0 !important;
+    border-radius: 999px !important;
+    padding: 7px 16px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.86rem !important;
+    font-weight: 600 !important;
+    color: #0F172A !important;
+    cursor: pointer !important;
+    transition: all 0.18s ease !important;
+    outline: none !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
+}
+
+.dock-btn:hover {
+    background: #C5E84A !important;
+    border-color: #A8D12F !important;
+    color: #0A0D10 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(168, 209, 47, 0.4) !important;
+}
+
+.dock-btn-center {
+    background: #C5E84A !important;
+    border: 2px solid #84A816 !important;
+    color: #0A0D10 !important;
+    font-weight: 700 !important;
+    padding: 9px 20px !important;
+    box-shadow: 0 4px 14px rgba(168, 209, 47, 0.5) !important;
+    transform: translateY(-4px) !important;
+}
+
+.dock-btn-center:hover {
+    background: #A8D12F !important;
+    transform: translateY(-6px) scale(1.05) !important;
+}
+
+.dock-btn-label {
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+}
+
+/* Alert Box Global Text Styling — Guaranteed Dark & Visible */
+div[data-testid="stAlert"], .stAlert {
+    border-radius: 14px !important;
+    padding: 14px 20px !important;
+}
+
+div[data-testid="stAlert"] *,
+.stAlert * {
+    color: #1E293B !important;
+    font-size: 0.94rem !important;
+    font-weight: 600 !important;
+}
+
+div[data-testid="stAlert"] b,
+div[data-testid="stAlert"] strong,
+.stAlert b,
+.stAlert strong {
+    color: #0F172A !important;
+    font-weight: 700 !important;
+}
+
+/* Radio Button Dark Text Guarantee */
+div[data-testid="stRadio"] label,
+div[data-testid="stRadio"] label *,
+div[data-testid="stRadio"] [data-testid="stMarkdownContainer"] *,
+div[data-testid="stRadio"] [role="radiogroup"] label * {
+    color: #0F172A !important;
+    font-weight: 600 !important;
+}
+
