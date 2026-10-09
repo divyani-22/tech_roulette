@@ -94,20 +94,24 @@ def apply_automotive_theme(fig: go.Figure, margin: dict[str, int] | None = None)
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter, sans-serif", color="#0F172A", size=12),
-        title_font=dict(family="Inter, sans-serif", color="#0F172A", size=13),
+        font=dict(family="Inter, sans-serif", color="#101828", size=12),
+        title_font=dict(family="Inter, sans-serif", color="#101828", size=13),
         margin=target_margin,
         xaxis=dict(
-            gridcolor="#E2E8F0", zerolinecolor="#E2E8F0",
-            tickfont=dict(family="Inter, sans-serif", color="#0F172A", size=11),
-            title_font=dict(family="Inter, sans-serif", color="#0F172A", size=12),
+            gridcolor="#EEF0F3", zerolinecolor="#E4E7EC", linecolor="#E4E7EC",
+            tickfont=dict(family="Inter, sans-serif", color="#667085", size=11),
+            title_font=dict(family="Inter, sans-serif", color="#344054", size=12),
         ),
         yaxis=dict(
-            gridcolor="#E2E8F0", zerolinecolor="#E2E8F0",
-            tickfont=dict(family="Inter, sans-serif", color="#0F172A", size=11),
-            title_font=dict(family="Inter, sans-serif", color="#0F172A", size=12),
+            gridcolor="#EEF0F3", zerolinecolor="#E4E7EC", linecolor="#E4E7EC",
+            tickfont=dict(family="Inter, sans-serif", color="#667085", size=11),
+            title_font=dict(family="Inter, sans-serif", color="#344054", size=12),
         ),
-        legend=dict(font=dict(family="Inter, sans-serif", color="#0F172A", size=11)),
+        legend=dict(font=dict(family="Inter, sans-serif", color="#344054", size=11)),
+        hoverlabel=dict(
+            bgcolor="#FFFFFF", bordercolor="#E4E7EC",
+            font=dict(family="Inter, sans-serif", color="#101828", size=12),
+        ),
         colorway=["#A8D12F", "#F97316", "#F2C94C", "#84CC16"],
     )
     return fig
