@@ -88,14 +88,15 @@ def load_custom_css() -> None:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
-def apply_automotive_theme(fig: go.Figure) -> go.Figure:
+def apply_automotive_theme(fig: go.Figure, margin: dict[str, int] | None = None) -> go.Figure:
     """Applies clean automotive dashboard theme to Plotly figures."""
+    target_margin = margin or dict(l=24, r=24, t=45, b=35)
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(family="Inter, sans-serif", color="#0F172A", size=12),
-        title_font=dict(family="Inter, sans-serif", color="#0F172A", size=14),
-        margin=dict(l=24, r=24, t=40, b=30),
+        title_font=dict(family="Inter, sans-serif", color="#0F172A", size=13),
+        margin=target_margin,
         xaxis=dict(
             gridcolor="#E2E8F0", zerolinecolor="#E2E8F0",
             tickfont=dict(family="Inter, sans-serif", color="#0F172A", size=11),
@@ -168,11 +169,10 @@ def render_hero_banner(risk_status: str, risk_color: str, risk_text: str, is_acn
         '<div class="voltcap-hero-banner">'
         '<div class="voltcap-hero-left">'
         f'{acn_badge_html}'
-        '<div class="voltcap-hero-title-row" onclick="document.querySelector(\'[data-testid=&quot;stSidebarCollapseButton&quot;], [data-testid=&quot;collapsedControl&quot;] button\')?.click()" style="cursor:pointer;" title="Click to open Controls & Configuration">'
+        '<div class="voltcap-hero-title-row">'
         f'{logo_img_tag}'
         '<h1 class="voltcap-hero-title">VoltCap</h1>'
         f'<div class="status-pill"><span class="status-dot" style="{status_dot_style}"></span>{risk_status} RISK — {risk_text}</div>'
-        '<button class="hero-sidebar-toggle-btn" onclick="event.stopPropagation();document.querySelector(\'[data-testid=&quot;stSidebarCollapseButton&quot;], [data-testid=&quot;collapsedControl&quot;] button\')?.click()" title="Click to open Sliding Controls & Upload Bar">Controls & Configuration ☰</button>'
         '</div>'
         '<p class="voltcap-hero-tagline">Commercial EV Demand Forecasting & Capacity-Safe Optimization</p>'
         '</div>'
@@ -288,8 +288,21 @@ def plot_light_model_comparison(summary_df: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
     fig.add_trace(go.Bar(x=summary_df["Model"], y=summary_df["MAE (kW)"], name="MAE (kW)", marker_color="#A8D12F"))
     fig.add_trace(go.Bar(x=summary_df["Model"], y=summary_df["RMSE (kW)"], name="RMSE (kW)", marker_color="#F97316"))
-    fig.update_layout(title="Error Metrics: Naive Baselines vs Trained ML Models (Lower is Better)", barmode="group", height=320)
-    return apply_automotive_theme(fig)
+    apply_automotive_theme(fig, margin=dict(l=30, r=30, t=55, b=55))
+    fig.update_layout(
+        title=dict(
+            text="<b>Error Metrics</b>: Baselines vs ML Models (Lower is Better)",
+            x=0.0,
+            y=0.98,
+            xanchor="left",
+            yanchor="top",
+            font=dict(size=13, family="Inter, sans-serif", color="#0F172A"),
+        ),
+        barmode="group",
+        height=340,
+        legend=dict(orientation="h", yanchor="top", y=-0.22, xanchor="center", x=0.5),
+    )
+    return fig
 
 
 def plot_light_actual_vs_predicted(eval_df: pd.DataFrame, n_points: int = 120) -> go.Figure:
@@ -298,8 +311,20 @@ def plot_light_actual_vs_predicted(eval_df: pd.DataFrame, n_points: int = 120) -
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=sample["timestamp"], y=sample["actual_kw"], mode="lines", name="Actual Demand (kW)", line=dict(color="#64748B", width=1.8)))
     fig.add_trace(go.Scatter(x=sample["timestamp"], y=sample["predicted_kw"], mode="lines", name="VoltCap Forecast (kW)", line=dict(color="#84CC16", width=2.5)))
-    fig.update_layout(title=f"Test Set: Actual vs Predicted Demand (Last {n_points} Hours)", height=340)
-    return apply_automotive_theme(fig)
+    apply_automotive_theme(fig, margin=dict(l=30, r=30, t=55, b=55))
+    fig.update_layout(
+        title=dict(
+            text=f"<b>Test Set Horizon</b>: Actual vs Predicted Demand ({n_points}h)",
+            x=0.0,
+            y=0.98,
+            xanchor="left",
+            yanchor="top",
+            font=dict(size=13, family="Inter, sans-serif", color="#0F172A"),
+        ),
+        height=340,
+        legend=dict(orientation="h", yanchor="top", y=-0.22, xanchor="center", x=0.5),
+    )
+    return fig
 
 
 
@@ -391,15 +416,46 @@ def plot_tariff_and_carbon_profile(current_hour: int) -> go.Figure:
     bar_colors = [COLOR_RED if 16 <= h <= 20 else (COLOR_LIME if (h < 7 or h >= 23) else COLOR_BAR_GREY) for h in prof_df["hour"]]
     fig.add_trace(go.Bar(x=prof_df["hour"], y=prof_df["tariff_usd_kwh"], name="ToU Tariff ($/kWh)", marker_color=bar_colors, yaxis="y1", opacity=0.85))
     fig.add_trace(go.Scatter(x=prof_df["hour"], y=prof_df["carbon_intensity_g_kwh"], name="Grid Carbon (g CO₂/kWh)", line=dict(color="#475569", width=2.5, dash="dot"), yaxis="y2"))
-    fig.add_vline(x=current_hour, line_dash="dash", line_color="#0F172A", line_width=2, annotation_text=f"Active Slot ({current_hour:02d}:00)", annotation_position="top")
+    fig.add_vline(
+        x=current_hour,
+        line_dash="dash",
+        line_color="#0F172A",
+        line_width=2,
+        annotation_text=f"Slot {current_hour:02d}:00",
+        annotation_position="top left",
+        annotation=dict(
+            font_size=10,
+            font_color="#0F172A",
+            bgcolor="rgba(255, 255, 255, 0.9)",
+            bordercolor="#CBD5E1",
+            borderwidth=1,
+            borderpad=3,
+        ),
+    )
+    apply_automotive_theme(fig, margin=dict(l=40, r=40, t=55, b=65))
     fig.update_layout(
-        title="24-Hour Diurnal Dynamics: Time-of-Use Tariff vs Grid Carbon Intensity", height=320,
+        title=dict(
+            text="<b>Diurnal Dynamics</b>: Time-of-Use Tariff vs Grid Carbon",
+            x=0.0,
+            y=0.98,
+            xanchor="left",
+            yanchor="top",
+            font=dict(size=13, family="Inter, sans-serif", color="#0F172A"),
+        ),
+        height=340,
         xaxis=dict(title="Hour of Day (0–23)", tickmode="linear", tick0=0, dtick=2),
         yaxis=dict(title="Tariff ($/kWh)", side="left"),
         yaxis2=dict(title="Carbon (g CO₂/kWh)", side="right", overlaying="y", showgrid=False),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        legend=dict(
+            orientation="h",
+            yanchor="top",
+            y=-0.26,
+            xanchor="center",
+            x=0.5,
+            font=dict(size=11, family="Inter, sans-serif", color="#0F172A"),
+        ),
     )
-    return apply_automotive_theme(fig)
+    return fig
 
 
 
@@ -441,10 +497,35 @@ def plot_light_ev_allocations(sched_df: pd.DataFrame, cap_kw: float) -> go.Figur
         x=sched_df["ev_id"], y=sched_df["allocated_kw"], marker_color=colors,
         text=[f"{v:.1f} kW" for v in sched_df["allocated_kw"]], textposition="auto",
     ))
-    fig.add_hline(y=cap_kw, line_dash="dash", line_color=COLOR_RED, line_width=2.5,
-                  annotation_text=f"CAP {cap_kw:.1f} kW", annotation_position="top right")
-    fig.update_layout(title="Per-EV Power Allocation (Greedy EDF & BMS Safeguard)", height=320)
-    return apply_automotive_theme(fig)
+    fig.add_hline(
+        y=cap_kw,
+        line_dash="dash",
+        line_color=COLOR_RED,
+        line_width=2.5,
+        annotation_text=f"CAP {cap_kw:.1f} kW",
+        annotation_position="top right",
+        annotation=dict(
+            font_size=10,
+            font_color=COLOR_RED,
+            bgcolor="rgba(255, 255, 255, 0.9)",
+            bordercolor=COLOR_RED,
+            borderwidth=1,
+            borderpad=3,
+        ),
+    )
+    apply_automotive_theme(fig, margin=dict(l=30, r=30, t=50, b=40))
+    fig.update_layout(
+        title=dict(
+            text="<b>Per-EV Power Allocation</b>: Greedy EDF & Safeguard Dispatch",
+            x=0.0,
+            y=0.98,
+            xanchor="left",
+            yanchor="top",
+            font=dict(size=13, family="Inter, sans-serif", color="#0F172A"),
+        ),
+        height=330,
+    )
+    return fig
 
 
 def render_segmented_cap_meter(allocated_kw: float, cap_kw: float, util_pct: float) -> None:
@@ -526,8 +607,19 @@ def plot_light_peak_comparison(impact_dict: dict[str, Any]) -> go.Figure:
         text=[f"{v:.1f} kW" for v in [impact_dict["uncontrolled_peak_kw"], impact_dict["scheduled_peak_kw"]]],
         textposition="auto",
     ))
-    fig.update_layout(title="Peak Shaving: Uncontrolled Surge vs Cap-Safe Schedule", height=320)
-    return apply_automotive_theme(fig)
+    apply_automotive_theme(fig, margin=dict(l=40, r=40, t=55, b=65))
+    fig.update_layout(
+        title=dict(
+            text="<b>Peak Shaving</b>: Uncontrolled Surge vs Scheduled",
+            x=0.0,
+            y=0.98,
+            xanchor="left",
+            yanchor="top",
+            font=dict(size=13, family="Inter, sans-serif", color="#0F172A"),
+        ),
+        height=340,
+    )
+    return fig
 
 
 def render_compliance_cert_section(impact: dict[str, Any], cap_kw: float, report_md: str) -> None:
@@ -633,7 +725,8 @@ def get_or_train_rf_model(train_df: pd.DataFrame) -> tuple[Any, float, pd.DataFr
             st.session_state["rf_model"] = rf_model
             st.session_state["train_time"] = train_time
             st.session_state["importances"] = importances
-            st.toast("Model retrained successfully!", icon="✓")
+            st.toast("Model retrained successfully!")
+
 
     return st.session_state["rf_model"], st.session_state["train_time"], st.session_state["importances"]
 
