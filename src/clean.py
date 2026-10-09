@@ -47,7 +47,8 @@ def validate_and_load_data(file_path_or_buffer: Any) -> pd.DataFrame:
     if missing:
         raise ValueError(f"Input data missing mandatory columns: {missing}")
 
-    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df["timestamp"] = pd.to_datetime(df["timestamp"], format="mixed", errors="coerce")
+    df = df.dropna(subset=["timestamp"])
     # Sort chronologically to preserve time-series ordering
     df = df.sort_values(by=["station_id", "timestamp"]).reset_index(drop=True)
     return df
