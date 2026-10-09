@@ -26,7 +26,10 @@ def chronological_split(
     correlations into past training, invalidating real-world out-of-sample tests.
     """
     df_sorted = df.sort_values(by="timestamp").reset_index(drop=True)
+    if len(df_sorted) <= 2:
+        return df_sorted.copy(), df_sorted.copy()
     split_idx = int(len(df_sorted) * split_ratio)
+    split_idx = max(1, min(split_idx, len(df_sorted) - 1))
     train_df = df_sorted.iloc[:split_idx].copy()
     test_df = df_sorted.iloc[split_idx:].copy()
     return train_df, test_df
@@ -38,7 +41,8 @@ def train_random_forest(
 ) -> tuple[RandomForestRegressor, float, pd.DataFrame]:
     """Trains scikit-learn RandomForestRegressor and tracks elapsed runtime."""
     start_time = time.time()
-    model = RandomForestRegressor(**RF_PARAMS)
+    n_est = min(RF_PARAMS["n_estimators"], max(10, len(X_train) * 5))
+    model = RandomForestRegressor(n_estimators=n_est, max_depth=RF_PARAMS["max_depth"], random_state=42)
     model.fit(X_train, y_train)
     elapsed_time = time.time() - start_time
 

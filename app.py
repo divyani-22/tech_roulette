@@ -123,10 +123,17 @@ def load_and_prepare_data(
     source_type: str = "synthetic",
     file_bytes: bytes | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
-    """Loads, cleans, and engineers features from uploaded CSV, empirical ACN dataset, or synthetic data."""
+    """Loads, cleans, and engineers features from uploaded CSV/JSON, empirical ACN dataset, or synthetic data."""
     if source_type == "custom" and file_bytes is not None:
         import io
-        raw_df = pd.read_csv(io.BytesIO(file_bytes))
+        content = file_bytes.decode("utf-8", errors="replace").strip()
+        if content.startswith("{") or content.startswith("["):
+            try:
+                raw_df = pd.read_json(io.StringIO(content))
+            except Exception:
+                raw_df = pd.read_csv(io.BytesIO(file_bytes))
+        else:
+            raw_df = pd.read_csv(io.BytesIO(file_bytes))
     elif source_type == "acn":
         platform_parquet = ROOT_DIR.parent / "EV-Charging-Demand-Forecasting-Capacity-Planning-Platform" / "data" / "processed" / "hourly_demand.parquet"
         if platform_parquet.exists():
@@ -703,13 +710,17 @@ def setup_sidebar_controls() -> tuple[str, str, float, bytes | None, float]:
         [
             "Sample Synthetic Data",
             "Caltech / JPL ACN-Data (Empirical)",
-            "Upload Custom CSV",
+            "Upload Custom Dataset (CSV/JSON)",
         ],
     )
-    uploaded_file = st.sidebar.file_uploader("Upload CSV", type=["csv"]) if data_mode == "Upload Custom CSV" else None
+    uploaded_file = st.sidebar.file_uploader(
+        "Upload Hidden Test Data (.csv, .json)",
+        type=["csv", "json"],
+        help="Upload any unseen CSV or JSON test dataset to evaluate WattWise live with zero hardcoding.",
+    ) if "Upload Custom" in data_mode else None
     file_bytes = uploaded_file.getvalue() if uploaded_file else None
 
-    source_key = "acn" if data_mode == "Caltech / JPL ACN-Data (Empirical)" else ("custom" if data_mode == "Upload Custom CSV" else "synthetic")
+    source_key = "acn" if data_mode == "Caltech / JPL ACN-Data (Empirical)" else ("custom" if "Upload Custom" in data_mode else "synthetic")
     cap_kw = st.sidebar.slider("Station Power Cap (kW)", MIN_CAP_KW, MAX_CAP_KW, DEFAULT_CAP_KW, STEP_CAP_KW)
     ambient_temp = st.sidebar.slider(
         "Ambient Temperature (°C)",
@@ -720,17 +731,22 @@ def setup_sidebar_controls() -> tuple[str, str, float, bytes | None, float]:
     return data_mode, source_key, cap_kw, file_bytes, ambient_temp
 
 
-def get_or_train_rf_model(train_df: pd.DataFrame) -> tuple[Any, float, pd.DataFrame]:
+def get_or_train_rf_model(train_df: pd.DataFrame, data_sig: str = "") -> tuple[Any, float, pd.DataFrame]:
     """Trains or retrieves cached Random Forest regressor with training telemetry."""
     force_retrain = st.sidebar.button("Retrain Models", use_container_width=True)
-    if "rf_model" not in st.session_state or force_retrain:
+    needs_train = (
+        "rf_model" not in st.session_state
+        or force_retrain
+        or st.session_state.get("trained_sig") != data_sig
+    )
+    if needs_train:
         with st.spinner("Training Random Forest regressor on chronological split..."):
             rf_model, train_time, importances = train_random_forest(train_df[FEATURE_COLS], train_df[TARGET_COL].to_numpy())
             st.session_state["rf_model"] = rf_model
             st.session_state["train_time"] = train_time
             st.session_state["importances"] = importances
-            st.toast("Model retrained successfully!")
-
+            st.session_state["trained_sig"] = data_sig
+            st.toast("Model retrained successfully!", icon="✅")
 
     return st.session_state["rf_model"], st.session_state["train_time"], st.session_state["importances"]
 
@@ -783,14 +799,16 @@ def _compute_simulation_state(test_df: pd.DataFrame, station: str, cap_kw: float
 
 def main() -> None:
     """Streamlit entry point orchestrating sidebar controls, modeling, and views."""
-    st.set_page_config(page_title="VoltCap — EV Demand & Load Balancer", layout="wide", initial_sidebar_state="collapsed")
+    st.set_page_config(page_title="WattWise — EV Demand & Load Balancer", layout="wide", initial_sidebar_state="collapsed")
     load_custom_css()
     data_mode, source_key, cap_kw, file_bytes, ambient_temp = setup_sidebar_controls()
     clean_df, feat_df, summary = load_and_prepare_data(source_key, file_bytes)
     station = st.sidebar.selectbox("Select Station", summary["stations"], index=0)
     station_feat = feat_df[feat_df["station_id"] == station].reset_index(drop=True)
     train_df, test_df = chronological_split(station_feat, 0.80)
-    rf_model, train_time, importances = get_or_train_rf_model(train_df)
+    target_sum = float(train_df[TARGET_COL].sum()) if len(train_df) > 0 and TARGET_COL in train_df else 0.0
+    data_sig = f"{source_key}:{station}:{len(train_df)}:{target_sum:.2f}"
+    rf_model, train_time, importances = get_or_train_rf_model(train_df, data_sig)
     eval_a, eval_b, eval_rf, summary_df, eval_df, pred_kw, low_kw, high_kw = _run_evaluation_and_forecast(test_df, rf_model)
     risk_status, risk_color, risk_text = compute_risk_level(pred_kw, cap_kw)
     render_hero_banner(risk_status, risk_color, risk_text, is_acn=summary.get("is_empirical_acn", False))

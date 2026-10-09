@@ -54,10 +54,10 @@ def compute_station_temporal_features(group: pd.DataFrame) -> pd.DataFrame:
     # So lag_1 = demand at t. lag_24 = demand at t-23 (24h before t+1).
     # To keep it standard: current observation is row t.
     grp["lag_1"] = grp["demand_kw"]  # Most recently observed demand at t
-    grp["lag_24"] = grp["demand_kw"].shift(23)  # Same hour yesterday relative to target t+1
+    grp["lag_24"] = grp["demand_kw"].shift(23).bfill().fillna(grp["demand_kw"])  # Same hour yesterday
 
     # Rolling 3-hour mean using past 3 observed points (t, t-1, t-2)
-    grp["rolling_mean_3"] = grp["demand_kw"].rolling(window=3).mean()
+    grp["rolling_mean_3"] = grp["demand_kw"].rolling(window=3, min_periods=1).mean()
 
     # Active sessions at current time t
     if "active_sessions" in grp.columns:
@@ -84,7 +84,7 @@ def create_feature_dataset(clean_df: pd.DataFrame, drop_na: bool = True) -> pd.D
     feat_df = pd.concat(processed_stations, ignore_index=True)
 
     if drop_na:
-        # Drop warm-up rows (first 24h lags) and final row (no future target available)
-        feat_df = feat_df.dropna(subset=[TARGET_COL, "lag_24", "rolling_mean_3"]).reset_index(drop=True)
+        # Drop only rows where future target is unknown (the last timestamp of the series)
+        feat_df = feat_df.dropna(subset=[TARGET_COL]).reset_index(drop=True)
 
     return feat_df
